@@ -8,6 +8,7 @@ import os from 'os'
 import path from 'path'
 import { FilenSDK } from '@filen/sdk'
 
+/*
 const app = express()
 const PORT = process.env.PORT || 8000
 
