@@ -68,7 +68,7 @@ async function uploadAuthToFilen() {
                 path: `/downloads/${file}`,
                 content: buffer
             })
-            console.log(`[Filen] Saved on: /downloads/${filename}`)
+            console.log(`[Filen] Saved on: /downloads/${file}`)
         }
         console.log('[Filen] Session update completed.')
     } catch (err) {
