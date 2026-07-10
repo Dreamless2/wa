@@ -1,0 +1,23 @@
+{
+  "name": "waview",
+  "version": "1.0.0",
+  "description": "waview",
+  "main": "bypass.js",
+  "type": "module",
+  "scripts": {
+    "postinstall": "node patch.js",
+    "start": "node bypass.js"
+  },
+  "author": "Optimusprime123",
+  "dependencies": {
+    "@filen/sdk": "^0.4.1",
+    "baileys": "^7.0.0-rc13",
+    "express": "^5.2.1",
+    "pino": "10.3.1",
+    "qrcode-terminal": "^0.12.0"
+  },
+  "allowScripts": {
+    "baileys@7.0.0-rc13": true,
+    "protobufjs@7.6.5": true
+  }
+}
