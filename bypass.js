@@ -30,7 +30,7 @@ await filen.login({
     password: process.env.FILEN_PASSWORD || "",
 })
 
-const LOCAL_TMP_DIR = path.join(os.tmpdir(), 'waview_tmp')
+const LOCAL_TMP_DIR = path.join(os.tmpdir(), 'wa_tmp')
 const LOCAL_AUTH_DIR = path.join(LOCAL_TMP_DIR, 'auth')
 mkdirSync(LOCAL_AUTH_DIR, { recursive: true })
 
