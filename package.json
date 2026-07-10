@@ -2,11 +2,11 @@
   "name": "wa",
   "version": "1.0.0",
   "description": "wa",
-  "main": "index.js",
+  "main": "bypass.js",
   "type": "module",
   "scripts": {
     "postinstall": "node patch.js",
-    "start": "node index.js"
+    "start": "node bypass.js"
   },
   "author": "Optimusprime123",
   "dependencies": {
