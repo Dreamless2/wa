@@ -8,7 +8,6 @@
     "postinstall": "node patch.js",
     "start": "node bypass.js"
   },
-  "author": "Optimusprime123",
   "dependencies": {
     "@filen/sdk": "^0.4.1",
     "baileys": "^7.0.0-rc13",
