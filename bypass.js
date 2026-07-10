@@ -68,7 +68,7 @@ async function uploadAuthToFilen() {
                 path: `/auth_info_android_bypass/${file}`,
                 content: buffer
             })
-            console.log(`[Filen] Saved on: /downloads/${file}`)
+            console.log(`[Filen] Saved on: /auth_info_android_bypass/${file}`)
         }
         console.log('[Filen] Session update completed.')
     } catch (err) {
