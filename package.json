@@ -1,7 +1,7 @@
 {
-  "name": "waview",
+  "name": "wa",
   "version": "1.0.0",
-  "description": "waview",
+  "description": "wa",
   "main": "bypass.js",
   "type": "module",
   "scripts": {
