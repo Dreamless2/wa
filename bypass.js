@@ -12,7 +12,7 @@ const app = express()
 const PORT = process.env.PORT || 8000
 
 app.get('/', (req, res) => {
-    res.send('Running!')
+    res.send('Running the app!')
 })
 
 app.listen(PORT, () => {
