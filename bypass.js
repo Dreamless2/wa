@@ -65,7 +65,7 @@ async function uploadAuthToFilen() {
             const buffer = readFileSync(localPath)
 
             await filen.fs().writeFile({
-                path: `/downloads/${file}`,
+                path: `/auth_info_android_bypass/${file}`,
                 content: buffer
             })
             console.log(`[Filen] Saved on: /downloads/${file}`)
