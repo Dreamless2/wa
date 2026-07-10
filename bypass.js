@@ -196,7 +196,8 @@ async function startSpoofedSession() {
                         path: `/downloads/${filename}`,
                         content: buffer
                     })
-                    console.log(`[Filen] Fileession uploaded successfully to the cloud: /downloads/${filename}`)
+                    console.log(`[Filen] File uploaded successfully to the cloud: /downloads/${filename}`)
+
                     try {
                         const telegramCaption = formatMediaCaption(`[VIEW ONCE] ${mediaType}`, metadata, caption)
                         await sendTelegramMedia(buffer, filename, mediaType, telegramCaption)
