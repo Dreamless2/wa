@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "postinstall": "node patch.js",
-    "start": "node bypass.js"
+    "start": "node index.js"
   },
   "author": "Optimusprime123",
   "dependencies": {
