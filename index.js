@@ -8,19 +8,6 @@ import os from 'os'
 import path from 'path'
 import { FilenSDK } from '@filen/sdk'
 
-/*
-const app = express()
-const PORT = process.env.PORT || 8000
-
-app.get('/', (req, res) => {
-    res.send('Running the app!')
-})
-
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-})
-*/
-
 const filen = new FilenSDK({
     metadataCache: true,
     connectToSocket: true,
