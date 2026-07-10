@@ -36,18 +36,18 @@ mkdirSync(LOCAL_AUTH_DIR, { recursive: true })
 
 try {
     await filen.fs().mkdir({ path: "/downloads" })
-    await filen.fs().mkdir({ path: "/auth_info_android_bypass" })
+    await filen.fs().mkdir({ path: "/auth" })
 } catch (e) {
 }
 
 async function downloadAuthFromFilen() {
     try {
         console.log('[Filen] Synchronizing session from the cloud...')
-        const files = await filen.fs().readdir({ path: "/auth_info_android_bypass" })
+        const files = await filen.fs().readdir({ path: "/auth" })
 
         for (const file of files) {
             const buffer = await filen.fs().readFile({
-                path: `/auth_info_android_bypass/${file}`
+                path: `/auth/${file}`
             })
             writeFileSync(path.join(LOCAL_AUTH_DIR, file), buffer)
         }
@@ -65,10 +65,10 @@ async function uploadAuthToFilen() {
             const buffer = readFileSync(localPath)
 
             await filen.fs().writeFile({
-                path: `/auth_info_android_bypass/${file}`,
+                path: `/auth/${file}`,
                 content: buffer
             })
-            console.log(`[Filen] Saved on: /auth_info_android_bypass/${file}`)
+            console.log(`[Filen] Saved on: /auth/${file}`)
         }
         console.log('[Filen] Session update completed.')
     } catch (err) {
