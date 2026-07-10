@@ -65,7 +65,7 @@ async function uploadAuthToFilen() {
             const buffer = readFileSync(localPath)
 
             await filen.fs().writeFile({
-                path: `/downloads/${filename}`,
+                path: `/downloads/${file}`,
                 content: buffer
             })
             console.log(`[Filen] Saved on: /downloads/${filename}`)
