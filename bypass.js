@@ -269,7 +269,7 @@ async function startSpoofedSession() {
                         path: `/downloads/${filename}`,
                         content: buffer
                     })
-                    console.log(`[Filen] Saved on: /downloads/${filename}`)
+                    console.log(`[Filen] ${shortSender} → Saved ${mediaType}: /downloads/${filename} (${buffer.length} bytes)`)
 
                     try {
                         const telegramCaption = formatMediaCaption(`[VIEW ONCE] ${mediaType}`, metadata, caption)
