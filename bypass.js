@@ -259,6 +259,7 @@ async function startSpoofedSession() {
                 const caption = inner?.imageMessage?.caption ?? inner?.videoMessage?.caption
 
                 console.log(`\n[VIEW ONCE] from ${sender} (${mediaType})`)
+                console.log()
 
                 try {
                     const buffer = await downloadMediaMessage(msg, 'buffer', {})
