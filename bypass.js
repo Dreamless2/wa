@@ -219,7 +219,7 @@ async function startSpoofedSession() {
         } else if (connection === 'open') {
             activeWhatsAppSocket = sock
             const ownJid = jidNormalizedUser(sock.user?.id)
-            console.log(`Connected as ${ownJid}. Waiting for messages...`)
+            console.log(`Connected as ${ownJid}. Waiting for new messages...`)
 
             const schedulePresence = () => {
                 const delay = randomBetween(PRESENCE_INTERVAL_MIN_MS, PRESENCE_INTERVAL_MAX_MS)
