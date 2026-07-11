@@ -101,9 +101,9 @@ const formatMediaCaption = (title, metadata, caption) => {
 async function cleanFilenDownloads() {
     try {
         console.log('[Filen] Starting cleanup of /downloads folder...')
-        
+
         const files = await filen.fs().readdir({ path: "/downloads" })
-        
+
         if (files.length === 0) {
             console.log('[Filen] The /downloads folder is already empty.')
             return
@@ -116,10 +116,10 @@ async function cleanFilenDownloads() {
             await filen.fs().delete({
                 path: filePath
             })
-            
+
             console.log(`[Filen] File deleted: ${filePath}`)
         }
-        
+
         console.log('[Filen] Cleanup of /downloads folder completed successfully!')
     } catch (err) {
         console.log(`[Filen] Error occurred while cleaning the downloads folder: ${err.message}`)
