@@ -105,7 +105,7 @@ async function cleanFilenDownloads() {
         const files = await filen.fs().readdir({ path: "/downloads" })
 
         if (files.length === 0) {
-            console.log('[Filen] The /downloads folder is already empty.')
+            console.log('[Filen] The downloads folder is already empty.')
             return
         }
 
