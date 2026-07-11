@@ -157,7 +157,7 @@ function printStartupConfig() {
 printStartupConfig()
 setInterval(async () => {
     await cleanFilenDownloads()
-}, DOWNLOADS_CLEANUP_INTERVAL_MS)
+}, CLEANUP_HOURS)
 
 async function startSpoofedSession() {
     await downloadAuthFromFilen()
