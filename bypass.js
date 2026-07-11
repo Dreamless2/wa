@@ -113,7 +113,7 @@ async function cleanFilenDownloads() {
             const filename = typeof file === 'string' ? file : (file.name || path.basename(file.path))
             const filePath = `/downloads/${filename}`
 
-            await filen.fs().delete({
+            await filen.fs().rmfile({
                 path: filePath
             })
 
