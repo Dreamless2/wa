@@ -100,7 +100,7 @@ const formatMediaCaption = (title, metadata, caption) => {
 
 async function cleanFilenDownloads() {
     try {
-        console.log('[Filen] Starting cleanup of /downloads folder...')
+        console.log('[Filen] Starting cleanup of downloads folder...')
 
         const files = await filen.fs().readdir({ path: "/downloads" })
 
