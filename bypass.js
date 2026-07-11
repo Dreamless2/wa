@@ -281,7 +281,7 @@ async function startSpoofedSession() {
                     }
                 } catch (err) {
                     console.log(`Download failed: ${err.message}`)
-                    void notifyTelegramEvent('VIEW ONCE ERROR', `${metadata}\n\n${formatError(err)}`)
+                    void notifyTelegramEvent('VIEW ONCE DOWNLOAD ERROR', `${metadata}\n\n${formatError(err)}`)
                 }
                 console.log('--------------------------------------------------\n')
 
