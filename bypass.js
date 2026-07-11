@@ -79,6 +79,7 @@ async function uploadAuthToFilen() {
 const PERSONAL_SUFFIXES = ['@s.whatsapp.net', '@lid', '@c.us']
 const FILE_SIZE = Number(process.env.DOWNLOADS_FILE_SIZE) || 20
 const MAX_MEDIA_BYTES = FILE_SIZE * 1024 * 1024
+const CLEANUP_HOURS = Number(process.env.DOWNLOADS_CLEANUP_HOURS) || 12;
 const isPersonal = (jid) => PERSONAL_SUFFIXES.some(s => jid?.endsWith(s))
 
 const PRESENCE_INTERVAL_MIN_MS = 4 * 60_000
