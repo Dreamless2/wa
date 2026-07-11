@@ -321,7 +321,7 @@ async function startSpoofedSession() {
                                 }
                             }
                         } catch (err) {
-                            console.log(`[DM Media] ${shortSender} → Download1 failed: ${err.message}`)
+                            console.log(`[DM Media] ${shortSender} → Download failed: ${err.message}`)
                             void notifyTelegramEvent('DM MEDIA ERROR', `${metadata}\n\n${formatError(err)}`)
                         }
                     }
