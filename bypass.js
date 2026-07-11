@@ -169,7 +169,6 @@ process.on('unhandledRejection', (reason, promise) => {
     void notifyTelegramEvent('UNHANDLED REJECTION', formatError(reason))
 })
 
-
 process.on('unhandledRejection', (err) => {
     console.log(`[Unhandled Rejection] ${formatError(err)}`)
     void notifyTelegramEvent('UNHANDLED REJECTION', formatError(err))
