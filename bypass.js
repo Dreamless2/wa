@@ -211,6 +211,7 @@ async function startSpoofedSession() {
             void notifyTelegramEvent('DISCONNECTED', [
                 `Status code: ${statusCode || 'unknown'}`,
                 `Reconnect: ${shouldReconnect}`,
+                
             ].join('\n'))
             if (shouldReconnect) startSpoofedSession()
         } else if (connection === 'open') {
