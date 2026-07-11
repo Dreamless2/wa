@@ -120,7 +120,7 @@ async function cleanFilenDownloads() {
             console.log(`[Filen] File deleted: ${filePath}`)
         }
 
-        console.log('[Filen] Cleanup of /downloads folder completed successfully!')
+        console.log('[Filen] Cleanup of downloads folder completed successfully!')
     } catch (err) {
         console.log(`[Filen] Error occurred while cleaning the downloads folder: ${err.message}`)
     }
