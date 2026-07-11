@@ -102,7 +102,6 @@ async function cleanFilenDownloads() {
     try {
         console.log('[Filen] Iniciando varredura para limpeza da pasta /downloads...')
         
-        // 1. Lê todos os arquivos da pasta de downloads no Filen
         const files = await filen.fs().readdir({ path: "/downloads" })
         
         if (files.length === 0) {
@@ -110,15 +109,10 @@ async function cleanFilenDownloads() {
             return
         }
 
-        // 2. Percorre os arquivos e apaga um por um
         for (const file of files) {
-            // Dependendo do retorno do readdir do Filen, o 'file' pode vir como string (nome) 
-            // ou como objeto. Garantimos o caminho correto aqui:
             const filename = typeof file === 'string' ? file : (file.name || path.basename(file.path))
             const filePath = `/downloads/${filename}`
 
-            // 3. Executa o comando de deletar do SDK
-            // Nota: Se .delete() não funcionar no seu SDK, tente .rm()
             await filen.fs().delete({
                 path: filePath
             })
