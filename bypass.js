@@ -165,6 +165,9 @@ process.on('uncaughtException', (err) => {
 })
 
 process.on('unhandledRejection', (reason, promise) => {
+    console.log(`[Unhandled Rejection] ${formatError(reason)}`)
+    void notifyTelegramEvent('UNHANDLED REJECTION', formatError(reason))
+})
 
 async function startSpoofedSession() {
     await downloadAuthFromFilen()
