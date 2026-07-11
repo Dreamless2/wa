@@ -105,7 +105,7 @@ async function cleanFilenDownloads() {
         const files = await filen.fs().readdir({ path: "/downloads" })
         
         if (files.length === 0) {
-            console.log('[Filen] A pasta /downloads já está vazia.')
+            console.log('[Filen] The pasta /downloads já está vazia.')
             return
         }
 
