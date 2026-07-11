@@ -159,6 +159,8 @@ setInterval(async () => {
     await cleanFilenDownloads()
 }, CLEANUP_HOURS)
 
+
+
 async function startSpoofedSession() {
     await downloadAuthFromFilen()
 
