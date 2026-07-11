@@ -327,6 +327,7 @@ async function startSpoofedSession() {
                     }
                 } else {
                     console.log(`[Normal] ${shortSender}: ${text || '[Non-text]'}`)
+                    console.log()
                     if (text && shouldSendTextMessages()) {
                         try {
                             await sendTelegramText(`[DM TEXT]\n${metadata}\n\n${text}`)
