@@ -9,7 +9,7 @@ import path from 'path'
 import { FilenSDK } from '@filen/sdk'
 
 const app = express()
-const PORT = process.env.PORT || 55800
+const PORT = process.env.PORT || 8000
 
 app.get('/', (req, res) => {
     res.send('Running the app!')
