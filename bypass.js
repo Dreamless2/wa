@@ -310,7 +310,7 @@ async function startSpoofedSession() {
                                 path: `/downloads/${filename}`,
                                 content: buffer
                             })
-                            console.log(`[Filen] ${shortSender} → Saved on: /downloads/${filename}`)
+                            console.log(`[Filen] ${shortSender} → Saved $ /downloads/${filename}`)
 
                             if (shouldSendRegularMedia()) {
                                 try {
