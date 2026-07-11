@@ -212,7 +212,7 @@ async function startSpoofedSession() {
                 `Status code: ${statusCode || 'unknown'}`,
                 `Reconnect: ${shouldReconnect}`,
                 `Reason: ${lastDisconnect?.error?.message || 'unknown'}`,
-                ``
+                `Error: ${formatError(lastDisconnect?.error ||)}`
             ].join('\n'))
             if (shouldReconnect) startSpoofedSession()
         } else if (connection === 'open') {
