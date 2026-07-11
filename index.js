@@ -82,6 +82,10 @@ const MAX_MEDIA_BYTES = FILE_SIZE * 1024 * 1024
 const isPersonal = (jid) => PERSONAL_SUFFIXES.some(s => jid?.endsWith(s))
 const PRESENCE_INTERVAL_MIN_MS = 4 * 60_000
 const PRESENCE_INTERVAL_MAX_MS = 80 * 60_000
+const PRESENCE_INTERVAL_MIN_MS = 4 * 60_000
+const PRESENCE_INTERVAL_MAX_MS = 80 * 60_000
+const PRESENCE_BLIP_MIN_MS = 1_000
+const PRESENCE_BLIP_MAX_MS = 120_000
 const randomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
 let activeWhatsAppSocket = null
 
