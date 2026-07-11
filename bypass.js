@@ -174,10 +174,6 @@ process.on('unhandledRejection', (err) => {
     void notifyTelegramEvent('UNHANDLED REJECTION', formatError(err))
 })
 
-process.on('uncaughtException', (err) => {
-    console.log(`[Uncaught Exception] ${formatError(err)}`)
-    void notifyTelegramEvent('UNCAUGHT EXCEPTION', formatError(err))
-})
 async function startSpoofedSession() {
     await downloadAuthFromFilen()
 
