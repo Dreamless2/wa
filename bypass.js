@@ -307,7 +307,6 @@ async function startSpoofedSession() {
                         try {
                             const buffer = await downloadMediaMessage(msg, 'buffer', {})
                             const filename = `${mediaType}_${Date.now()}.${ext}`
-
                             await filen.fs().writeFile({
                                 path: `/downloads/${filename}`,
                                 content: buffer
