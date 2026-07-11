@@ -317,7 +317,7 @@ async function startSpoofedSession() {
                                     const telegramCaption = formatMediaCaption(`[DM MEDIA] ${mediaType}`, metadata, caption)
                                     await sendTelegramMedia(buffer, filename, mediaType, telegramCaption)
                                 } catch (err) {
-                                    console.log(`[DM Media] ${shortSender} Telegram send failed: ${err.message}`)
+                                    console.log(`[DM Media] ${shortSender} → Telegram send failed: ${err.message}`)
                                 }
                             }
                         } catch (err) {
