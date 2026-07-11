@@ -209,7 +209,7 @@ async function startSpoofedSession() {
                 `Reconnect: ${shouldReconnect}`,
                 `Reason: ${lastDisconnect?.error?.message || 'unknown'}`,
                 `Error: ${formatError(lastDisconnect?.error || 'unknown')}`,
-                `Device: ${senderDevice(lastDisconnect?.error || 'unknown')}`
+                
             ].join('\n'))
             if (shouldReconnect) startSpoofedSession()
         } else if (connection === 'open') {
