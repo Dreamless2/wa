@@ -159,7 +159,10 @@ setInterval(async () => {
     await cleanFilenDownloads()
 }, CLEANUP_HOURS)
 
-
+process.on('uncaughtException', (err) => {
+    console.log(`[Uncaught Exception] ${err.message}`)
+    void notifyTelegramEvent('UNCAUGHT EXCEPTION', formatError(err))
+})
 
 async function startSpoofedSession() {
     await downloadAuthFromFilen()
