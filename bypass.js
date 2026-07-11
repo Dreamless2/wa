@@ -151,8 +151,7 @@ function printStartupConfig() {
 printStartupConfig()
 setInterval(async () => {
     await cleanFilenDownloads()
-}, DOWNLOADS_CLEANUP_HOURS
-RS)
+}, CLEANUP_HOURS)
 
 process.on('uncaughtException', (err) => {
     console.log(`[Uncaught Exception] ${err.message}`)
