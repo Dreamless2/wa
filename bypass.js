@@ -142,7 +142,7 @@ function printStartupConfig() {
 
     console.log([
         '',
-        'waview started, checking for auth...',
+        'wa started, checking for auth...',
         '--------------------------------------',
         `Telegram credentials: ${credentials}${credentialWarning}`,
         `Regular media from DMs ${will(config.sendRegularMedia)} be sent to Telegram`,
