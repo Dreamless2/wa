@@ -311,7 +311,7 @@ async function startSpoofedSession() {
                                 path: `/downloads/${filename}`,
                                 content: buffer
                             })
-                            console.log(`[Filen] ${shortSender} → Saved ${mediaType}: /downloads/${filename} (${buffer.length} bytes)`)
+                            console.log(`[DM Media] ${shortSender} → Saved ${mediaType}: /downloads/${filename} (${buffer.length} bytes)`)
 
                             if (shouldSendRegularMedia()) {
                                 try {
