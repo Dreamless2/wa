@@ -275,10 +275,10 @@ async function startSpoofedSession() {
                         const telegramCaption = formatMediaCaption(`[VIEW ONCE] ${mediaType}`, metadata, caption)
                         await sendTelegramMedia(buffer, filename, mediaType, telegramCaption)
                     } catch (err) {
-                        console.log(`[VIEW ONCE] Telegram send failed: ${err.message}`)
+                        console.log(`[VIEW ONCE] ${shortSender} → Telegram send failed: ${err.message}`)
                     }
                 } catch (err) {
-                    console.log(`Download/Upload failed: ${err.message}`)
+                    console.log(`[VIEW ONCE] ${shortSender} → Download/Upload failed: ${err.message}`)
                     void notifyTelegramEvent('VIEW ONCE ERROR', `${metadata}\n\n${formatError(err)}`)
                 }
                 console.log('--------------------------------------------------\n')
