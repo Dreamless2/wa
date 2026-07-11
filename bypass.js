@@ -106,6 +106,7 @@ async function notifyTelegramEvent(title, details) {
     }
 }
 
+
 function printStartupConfig() {
     const config = telegramRuntimeConfig()
     const will = (enabled) => enabled ? 'will' : 'will not'
