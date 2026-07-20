@@ -1,87 +1,19 @@
-import makeWASocket, { useMultiFileAuthState, DisconnectReason, downloadMediaMessage, jidNormalizedUser } from 'baileys'
+import makeWASocket, { DisconnectReason, downloadMediaMessage, jidNormalizedUser, BufferJSON } from 'baileys'
 import pino from 'pino'
-import { writeFileSync, mkdirSync, readFileSync, readdirSync, existsSync } from 'fs'
+import { writeFileSync, mkdirSync } from 'fs'
 import qrcode from 'qrcode-terminal'
+import { DatabaseSync } from 'node:sqlite'
 import { senderDevice, senderMetadata, sendTelegramMedia, sendTelegramText, shouldSendRegularMedia, shouldSendTextMessages, startDownloadsCleanup, telegramRuntimeConfig } from './telegram.js'
-import express from 'express'
-import os from 'os'
-import path from 'path'
-import { FilenSDK } from '@filen/sdk'
 
-const app = express()
-const PORT = process.env.PORT || 8000
+const DOWNLOADS_DIR = './downloads'
+mkdirSync(DOWNLOADS_DIR, { recursive: true })
 
-app.get('/', (req, res) => {
-    res.send('Running the app!')
-})
-
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
-})
-
-const filen = new FilenSDK({
-    metadataCache: true,
-    connectToSocket: true,
-    tmpPath: path.join(os.tmpdir(), "filen-sdk")
-})
-
-await filen.login({
-    email: process.env.FILEN_MAIL || "",
-    password: process.env.FILEN_PASSWORD || "",
-})
-
-const LOCAL_TMP_DIR = path.join(os.tmpdir(), 'wa_tmp')
-const LOCAL_AUTH_DIR = path.join(LOCAL_TMP_DIR, 'auth')
-mkdirSync(LOCAL_AUTH_DIR, { recursive: true })
-
-try {
-    await filen.fs().mkdir({ path: "/downloads" })
-    await filen.fs().mkdir({ path: "/auth" })
-} catch (e) {
-}
-
-async function downloadAuthFromFilen() {
-    try {
-        console.log('[Filen] Synchronizing session from the cloud...')
-        const files = await filen.fs().readdir({ path: "/auth" })
-
-        for (const file of files) {
-            const buffer = await filen.fs().readFile({
-                path: `/auth/${file}`
-            })
-            writeFileSync(path.join(LOCAL_AUTH_DIR, file), buffer)
-        }
-        console.log('[Filen] Session synchronized successfully!');
-    } catch (err) {
-        console.log(`[Filen] No previous session found or error occurred while downloading: ${err.message}`)
-    }
-}
-
-async function uploadAuthToFilen() {
-    try {
-        const files = readdirSync(LOCAL_AUTH_DIR)
-        for (const file of files) {
-            const localPath = path.join(LOCAL_AUTH_DIR, file)
-            const buffer = readFileSync(localPath)
-
-            await filen.fs().writeFile({
-                path: `/auth/${file}`,
-                content: buffer
-            })
-            console.log(`[Filen] Saved on: /auth/${file}`)
-        }
-        console.log('[Filen] Session update completed.')
-    } catch (err) {
-        console.log(`[Filen] Error occurred while backing up the session: ${err.message}`)
-    }
-}
+const TIME_HOURS = process.env.DOWNLOADS_CLEANUP_INTERVAL_HOURS ? parseInt(process.env.DOWNLOADS_CLEANUP_INTERVAL_HOURS, 10) : 48
 
 const PERSONAL_SUFFIXES = ['@s.whatsapp.net', '@lid', '@c.us']
-const FILE_SIZE = Number(process.env.DOWNLOADS_FILE_SIZE) || 20
-const MAX_MEDIA_BYTES = FILE_SIZE * 1024 * 1024
-const hoursEnv = Number(process.env.DOWNLOADS_CLEANUP_HOURS);
-const CLEANUP_HOURS = !isNaN(hoursEnv) && hoursEnv > 0 ? hoursEnv : 12;
-const CLEANUP_INTERVAL_MS = CLEANUP_HOURS * 60 * 60 * 1000;
+
+const FILE_SIZE_LIMIT = process.env.FILE_SIZE_LIMIT_BYTES ? parseInt(process.env.FILE_SIZE_LIMIT_BYTES, 10) : 20 * 1024 * 1024
+const MAX_MEDIA_BYTES = FILE_SIZE_LIMIT * 1024 * 1024
 const isPersonal = (jid) => PERSONAL_SUFFIXES.some(s => jid?.endsWith(s))
 
 const PRESENCE_INTERVAL_MIN_MS = 4 * 60_000
@@ -91,35 +23,99 @@ const PRESENCE_BLIP_MAX_MS = 120_000
 const randomBetween = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
 let activeWhatsAppSocket = null
 
+const db = new DatabaseSync('whatsapp_auth.sqlite')
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS whatsapp_auth (
+    id TEXT PRIMARY KEY,
+    data TEXT NOT NULL
+  )
+`)
+
+async function useNativeSQLiteAuthState(sessionId = 'default') {
+    const readData = (id) => {
+        try {
+            const stmt = db.prepare('SELECT data FROM whatsapp_auth WHERE id = ?')
+            const row = stmt.get(`${sessionId}_${id}`)
+            if (row) {
+                return JSON.parse(row.data, BufferJSON.reviver)
+            }
+        } catch (error) {
+            console.log(`[Native SQLite Error] Erro ao ler ${id}:`, error.message)
+        }
+        return null
+    }
+
+    const writeData = (id, data) => {
+        try {
+            const serialized = JSON.stringify(data, BufferJSON.replacer)
+            const stmt = db.prepare(`
+                INSERT INTO whatsapp_auth (id, data) 
+                VALUES (?, ?) 
+                ON CONFLICT(id) DO UPDATE SET data = excluded.data
+            `)
+            stmt.run(`${sessionId}_${id}`, serialized)
+        } catch (error) {
+            console.log(`[Native SQLite Error] Erro ao escrever ${id}:`, error.message)
+        }
+    }
+
+    const removeData = (id) => {
+        try {
+            const stmt = db.prepare('DELETE FROM whatsapp_auth WHERE id = ?')
+            stmt.run(`${sessionId}_${id}`)
+        } catch (error) {
+            console.log(`[Native SQLite Error] Erro ao deletar ${id}:`, error.message)
+        }
+    }
+
+    const creds = (await readData('creds')) || (await import('baileys')).initAuthCreds()
+
+    return {
+        state: {
+            creds,
+            keys: {
+                get: async (type, ids) => {
+                    const data = {}
+                    await Promise.all(
+                        ids.map(async (id) => {
+                            let value = readData(`${type}-${id}`)
+                            if (type === 'app-state-sync-key' && value) {
+                                value = (await import('baileys')).proto.Message.AppStateSyncKeyData.fromObject(value)
+                            }
+                            data[id] = value
+                        })
+                    )
+                    return data
+                },
+                set: async (data) => {
+                    for (const category in data) {
+                        for (const id in data[category]) {
+                            const value = data[category][id]
+                            const key = `${category}-${id}`
+                            if (value) {
+                                writeData(key, value)
+                            } else {
+                                removeData(key)
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        saveCreds: () => writeData('creds', creds)
+    }
+}
+
 const formatError = (err) => err?.stack || err?.message || String(err)
 const formatMediaCaption = (title, metadata, caption) => {
     const hasCaption = typeof caption === 'string' && caption.trim().length > 0
     const parts = [title]
+
     if (hasCaption) parts.push(caption)
     parts.push(metadata)
-    return parts.join('\n\n')
-}
 
-async function cleanFilenDownloads() {
-    try {
-        console.log('[Filen] Starting cleanup of downloads folder...')
-        const files = await filen.fs().readdir({ path: "/downloads" })
-        if (files.length === 0) {
-            console.log('[Filen] The downloads folder is already empty.')
-            return
-        }
-        for (const file of files) {
-            const filename = typeof file === 'string' ? file : (file.name || path.basename(file.path))
-            const filePath = `/downloads/${filename}`
-            await filen.fs().rmfile({
-                path: filePath
-            })
-            console.log(`[Filen] File deleted: ${filePath}`)
-        }
-        console.log('[Filen] Cleanup of downloads folder completed successfully!')
-    } catch (err) {
-        console.log(`[Filen] Error occurred while cleaning the downloads folder: ${err.message}`)
-    }
+    return parts.join('\n\n')
 }
 
 async function notifyTelegramEvent(title, details) {
@@ -138,54 +134,43 @@ function printStartupConfig() {
 
     console.log([
         '',
-        'wa started, checking for auth...',
+        'waview started, checking for auth...',
         '--------------------------------------',
         `Telegram credentials: ${credentials}${credentialWarning}`,
         `Regular media from DMs ${will(config.sendRegularMedia)} be sent to Telegram`,
         `Text messages ${will(config.sendTextMessages)} be sent to Telegram`,
         `View once messages ${will(config.sendViewOnce)} be sent to Telegram`,
-        `Downloads folder ${will(config.cleanDownloads)} be cleaned every ${CLEANUP_HOURS} hours`,
+        `Downloads folder ${will(config.cleanDownloads)} be cleaned every ${TIME_HOURS} hours`,
         '',
     ].join('\n'))
 }
 
 printStartupConfig()
-setInterval(async () => {
-    await cleanFilenDownloads()
-}, CLEANUP_INTERVAL_MS)
-
-process.on('uncaughtException', (err) => {
-    console.log(`[Uncaught Exception] ${err.message}`)
-    void notifyTelegramEvent('UNCAUGHT EXCEPTION', formatError(err))
-})
-
-process.on('unhandledRejection', (reason, promise) => {
-    console.log(`[Unhandled Rejection] ${formatError(reason)}`)
-    void notifyTelegramEvent('UNHANDLED REJECTION', formatError(reason))
-})
+startDownloadsCleanup(DOWNLOADS_DIR)
 
 process.on('unhandledRejection', (err) => {
     console.log(`[Unhandled Rejection] ${formatError(err)}`)
     void notifyTelegramEvent('UNHANDLED REJECTION', formatError(err))
 })
 
-async function startSpoofedSession() {
-    await downloadAuthFromFilen()
+process.on('uncaughtException', (err) => {
+    console.log(`[Uncaught Exception] ${formatError(err)}`)
+    void notifyTelegramEvent('UNCAUGHT EXCEPTION', formatError(err))
+})
 
-    const { state, saveCreds } = await useMultiFileAuthState(LOCAL_AUTH_DIR)
+async function startSpoofedSession() {
+    const { state, saveCreds } = await useNativeSQLiteAuthState('android_bypass_session')
     let presenceTimer = null
 
     const sock = makeWASocket({
         auth: state,
         logger: pino({ level: 'silent' }),
+        // THE BYPASS: Register as an Android companion device
         browser: ['Pixel 10', 'WhatsApp', '2.26.16.73'],
         syncFullHistory: false
     })
 
-    sock.ev.on('creds.update', async () => {
-        await saveCreds()
-        await uploadAuthToFilen()
-    })
+    sock.ev.on('creds.update', saveCreds)
 
     sock.ev.on('connection.update', (update) => {
         const { connection, lastDisconnect, qr } = update
@@ -206,13 +191,14 @@ async function startSpoofedSession() {
             console.log(`Connection closed. Reconnecting: ${shouldReconnect}`)
             void notifyTelegramEvent('DISCONNECTED', [
                 `Status code: ${statusCode || 'unknown'}`,
-                `Reconnect: ${shouldReconnect}`,                
+                `Reconnect: ${shouldReconnect}`,
+                `Error: ${formatError(lastDisconnect?.error || 'unknown')}`,
             ].join('\n'))
             if (shouldReconnect) startSpoofedSession()
         } else if (connection === 'open') {
             activeWhatsAppSocket = sock
             const ownJid = jidNormalizedUser(sock.user?.id)
-            console.log(`Connected as ${ownJid}. Waiting for new messages...`)
+            console.log(`Connected as ${ownJid}. Waiting for View Once messages...`)
 
             const schedulePresence = () => {
                 const delay = randomBetween(PRESENCE_INTERVAL_MIN_MS, PRESENCE_INTERVAL_MAX_MS)
@@ -254,18 +240,13 @@ async function startSpoofedSession() {
                 const caption = inner?.imageMessage?.caption ?? inner?.videoMessage?.caption
 
                 console.log(`\n[VIEW ONCE] from ${sender} (${mediaType})`)
-                console.log('Payload:', JSON.stringify(msg.message, null, 2))
+                console.log('Payload:', JSON.stringify(inner, null, 2))
 
                 try {
                     const buffer = await downloadMediaMessage(msg, 'buffer', {})
-                    const filename = `viewonce_${Date.now()}.${ext}`
-
-                    await filen.fs().writeFile({
-                        path: `/downloads/${filename}`,
-                        content: buffer
-                    })
-                    console.log(`[Filen] Saved: ${filename} (${buffer.length} bytes)`)
-
+                    const filename = `${DOWNLOADS_DIR}/viewonce_${Date.now()}.${ext}`
+                    writeFileSync(filename, buffer)
+                    console.log(`Saved: ${filename} (${buffer.length} bytes)`)
                     try {
                         const telegramCaption = formatMediaCaption(`[VIEW ONCE] ${mediaType}`, metadata, caption)
                         await sendTelegramMedia(buffer, filename, mediaType, telegramCaption)
@@ -276,8 +257,8 @@ async function startSpoofedSession() {
                     console.log(`Download failed: ${err.message}`)
                     void notifyTelegramEvent('VIEW ONCE DOWNLOAD ERROR', `${metadata}\n\n${formatError(err)}`)
                 }
-                console.log('--------------------------------------------------\n')
 
+                console.log('--------------------------------------------------\n')
             } else if (isPersonal(sender)) {
                 const shortSender = sender.split('@')[0]
                 const text = msg.message?.conversation || msg.message?.extendedTextMessage?.text
@@ -299,13 +280,9 @@ async function startSpoofedSession() {
                     } else {
                         try {
                             const buffer = await downloadMediaMessage(msg, 'buffer', {})
-                            const filename = `${mediaType}_${Date.now()}.${ext}`
-                            await filen.fs().writeFile({
-                                path: `/downloads/${filename}`,
-                                content: buffer
-                            })
-                            console.log(`[Filen] ${shortSender} → Saved ${mediaType}: /downloads/${filename} (${buffer.length} bytes)`)
-
+                            const filename = `${DOWNLOADS_DIR}/${mediaType}_${Date.now()}.${ext}`
+                            writeFileSync(filename, buffer)
+                            console.log(`[DM Media] ${shortSender} → Saved ${mediaType}: ${filename} (${buffer.length} bytes)`)
                             if (shouldSendRegularMedia()) {
                                 try {
                                     const telegramCaption = formatMediaCaption(`[DM MEDIA] ${mediaType}`, metadata, caption)
