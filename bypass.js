@@ -7,7 +7,7 @@ import { senderDevice, senderMetadata, sendTelegramMedia, sendTelegramText, shou
 import express from 'express'
 
 //express server
-const app
+const app = 
 
 
 const DOWNLOADS_DIR = './downloads'
