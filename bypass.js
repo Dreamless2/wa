@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`Servidor rodando na porta ${port}`);
+  console.log(`Listening ong  ${port}`);
 });
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
