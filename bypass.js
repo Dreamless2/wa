@@ -9,19 +9,16 @@ import express from 'express'
 const express = require('express');
 const app = express();
 
-// 1. Define your port explicitly
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8000;
 
 // 2. Setup your route handler
 app.get('/', (req, res) => {
   res.send('Running');
 });
 
-// 3. Start your server using the port variable
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
-
 
 const DOWNLOADS_DIR = './downloads'
 mkdirSync(DOWNLOADS_DIR, { recursive: true })
