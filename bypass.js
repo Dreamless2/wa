@@ -9,16 +9,21 @@ const app = express();
 
 const port = process.env.PORT || 8000;
 
+import express from 'express';
+
+const app = express();
+// Em produção, a porta DEVE vir da variável de ambiente do servidor
+const port = process.env.PORT || 8000; 
+
+// Rota de Health Check (essencial para monitoramento em produção)
 app.get('/', (req, res) => {
-  res.send('Running');
+  res.status(200).send('OK');
 });
 
 app.listen(port, () => {
-  console.log(`Listening ong  ${port}`);
+  console.log(`Servidor rodando em produção na porta ${port}`);
 });
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
-});
+
 
 const DOWNLOADS_DIR = './downloads'
 mkdirSync(DOWNLOADS_DIR, { recursive: true })
