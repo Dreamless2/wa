@@ -6,7 +6,8 @@ import { DatabaseSync } from 'node:sqlite'
 import { senderDevice, senderMetadata, sendTelegramMedia, sendTelegramText, shouldSendRegularMedia, shouldSendTextMessages, startDownloadsCleanup, telegramRuntimeConfig } from './telegram.js'
 import express from 'express'
 
-
+//express server
+const app
 
 
 const DOWNLOADS_DIR = './downloads'
