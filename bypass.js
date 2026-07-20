@@ -7,16 +7,20 @@ import { senderDevice, senderMetadata, sendTelegramMedia, sendTelegramText, shou
 import express from 'express'
 
 const express = require('express');
-const app = express()
-const port = 
+const app = express();
 
+// 1. Define your port explicitly
+const port = process.env.PORT || 3000;
+
+// 2. Setup your route handler
 app.get('/', (req, res) => {
-  res.send('Running')
-})
+  res.send('Running');
+});
 
+// 3. Start your server using the port variable
 app.listen(port, () => {
-  console.log(`Listening on port ${port}`)
-})
+  console.log(`Listening on port ${port}`);
+});
 
 
 const DOWNLOADS_DIR = './downloads'
