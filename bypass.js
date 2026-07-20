@@ -7,12 +7,7 @@ import { senderDevice, senderMetadata, sendTelegramMedia, sendTelegramText, shou
 const express = require('express');
 const app = express();
 
-const port = process.env.PORT || 8000;
-
-import express from 'express';
-
 const app = express();
-// Em produção, a porta DEVE vir da variável de ambiente do servidor
 const port = process.env.PORT || 8000; 
 
 // Rota de Health Check (essencial para monitoramento em produção)
