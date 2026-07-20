@@ -18,7 +18,7 @@ app.listen(port, () => {
   console.log(`Servidor rodando em produção na porta ${port}`);
 });
 
-app.use
+app.use(helmet());
 
 
 const DOWNLOADS_DIR = './downloads'
