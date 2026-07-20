@@ -5,6 +5,7 @@ import qrcode from 'qrcode-terminal'
 import { DatabaseSync } from 'node:sqlite'
 import { senderDevice, senderMetadata, sendTelegramMedia, sendTelegramText, shouldSendRegularMedia, shouldSendTextMessages, startDownloadsCleanup, telegramRuntimeConfig } from './telegram.js'
 
+
 const app = express();
 const port = process.env.PORT || 8000; 
 
