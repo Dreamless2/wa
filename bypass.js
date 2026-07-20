@@ -4,6 +4,9 @@ import { writeFileSync, mkdirSync } from 'fs'
 import qrcode from 'qrcode-terminal'
 import { DatabaseSync } from 'node:sqlite'
 import { senderDevice, senderMetadata, sendTelegramMedia, sendTelegramText, shouldSendRegularMedia, shouldSendTextMessages, startDownloadsCleanup, telegramRuntimeConfig } from './telegram.js'
+import express from 'express'
+
+
 
 
 const DOWNLOADS_DIR = './downloads'
