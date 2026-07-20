@@ -18,6 +18,8 @@ app.listen(port, () => {
   console.log(`Servidor rodando em produção na porta ${port}`);
 });
 
+app.use
+
 
 const DOWNLOADS_DIR = './downloads'
 mkdirSync(DOWNLOADS_DIR, { recursive: true })
