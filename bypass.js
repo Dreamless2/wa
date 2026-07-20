@@ -6,8 +6,17 @@ import { DatabaseSync } from 'node:sqlite'
 import { senderDevice, senderMetadata, sendTelegramMedia, sendTelegramText, shouldSendRegularMedia, shouldSendTextMessages, startDownloadsCleanup, telegramRuntimeConfig } from './telegram.js'
 import express from 'express'
 
-//express server
-const app = 
+const express = require('express');
+const app = express()
+const port = 3000
+
+app.get('/', (req, res) => {
+  res.send('Hello World!')
+})
+
+app.listen(port, () => {
+  console.log(`Example app listening on port ${port}`)
+})
 
 
 const DOWNLOADS_DIR = './downloads'
