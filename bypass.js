@@ -4,13 +4,10 @@ import { writeFileSync, mkdirSync } from 'fs'
 import qrcode from 'qrcode-terminal'
 import { DatabaseSync } from 'node:sqlite'
 import { senderDevice, senderMetadata, sendTelegramMedia, sendTelegramText, shouldSendRegularMedia, shouldSendTextMessages, startDownloadsCleanup, telegramRuntimeConfig } from './telegram.js'
-const express = require('express');
-const app = express();
 
 const app = express();
 const port = process.env.PORT || 8000; 
 
-// Rota de Health Check (essencial para monitoramento em produção)
 app.get('/', (req, res) => {
   res.status(200).send('OK');
 });
