@@ -4,18 +4,19 @@ import { writeFileSync, mkdirSync } from 'fs'
 import qrcode from 'qrcode-terminal'
 import { DatabaseSync } from 'node:sqlite'
 import { senderDevice, senderMetadata, sendTelegramMedia, sendTelegramText, shouldSendRegularMedia, shouldSendTextMessages, startDownloadsCleanup, telegramRuntimeConfig } from './telegram.js'
-import express from 'express'
-
 const express = require('express');
 const app = express();
 
 const port = process.env.PORT || 8000;
 
-// 2. Setup your route handler
 app.get('/', (req, res) => {
   res.send('Running');
 });
 
+// Inicializa o servidor na porta configurada
+app.listen(port, () => {
+  console.log(`Servidor rodando na porta ${port}`);
+});
 app.listen(port, () => {
   console.log(`Listening on port ${port}`);
 });
